@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lighting Color Match</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="app-header">
+        <div>
+          <p class="eyebrow">Lighting Tool</p>
+          <h1>Color Match</h1>
+        </div>
+        <p class="subhead">Build fixture recipes from a target color using constrained channel matching.</p>
+      </header>
+
+      <section class="layout-grid">
+        <article class="panel controls-panel">
+          <div class="row row-wrap">
+            <label class="field compact">
+              <span>Fixture Family</span>
+              <select id="familySelect">
+                <option value="additive">Additive LEDs</option>
+                <option value="cmy">CMY+CTO</option>
+              </select>
+            </label>
+            <label class="field compact">
+              <span>Match Mode</span>
+              <select id="modeSelect">
+                <option value="A">Level A</option>
+                <option value="B">Level B</option>
+                <option value="C">Level C</option>
+              </select>
+            </label>
+          </div>
+
+          <section class="mode-card" id="modeCard"></section>
+
+          <div class="row row-wrap color-row">
+            <label class="field">
+              <span>Target Color</span>
+              <input id="targetColor" type="color" value="#ff5500" />
+            </label>
+            <label class="field">
+              <span>Hex</span>
+              <div class="input-with-button">
+                <input id="hexInput" type="text" value="#FF5500" maxlength="7" />
+                <button id="copyHexBtn" type="button" class="btn ghost">Copy</button>
+              </div>
+              <small id="hexError" class="error" aria-live="polite"></small>
+            </label>
+          </div>
+
+          <div class="row row-wrap">
+            <label class="toggle">
+              <input id="showDecimals" type="checkbox" />
+              <span>Show percent decimals</span>
+            </label>
+            <label class="toggle">
+              <input id="showDisabled" type="checkbox" />
+              <span>Show unselected channels</span>
+            </label>
+          </div>
+
+          <section>
+            <div class="section-header">
+              <h2>Emitters</h2>
+              <div id="quickSets" class="quick-sets"></div>
+            </div>
+            <div id="emitterList" class="checklist"></div>
+          </section>
+
+          <details id="levelBPanel" class="advanced-panel">
+            <summary>Level B Chromaticity (Optional)</summary>
+            <p>Enter per-emitter x,y overrides. If omitted, defaults are used.</p>
+            <div id="chromaticityList" class="chromaticity-grid"></div>
+          </details>
+
+          <details id="levelCPanel" class="advanced-panel">
+            <summary>Level C SPD (Expert Beta)</summary>
+            <p>Paste SPD CSV by emitter. MVP beta stores data but falls back to defaults during solve.</p>
+            <textarea id="spdInput" rows="4" placeholder="emitter,wavelength_nm,power\nBlue,450,0.92"></textarea>
+          </details>
+        </article>
+
+        <article class="panel output-panel" id="outputPanel">
+          <div class="output-head">
+            <h2>Channel Output</h2>
+            <button id="copyCsvBtn" type="button" class="btn">Copy CSV</button>
+          </div>
+          <p id="nearBlackNote" class="note hidden">Target is near-black; mix not meaningful.</p>
+          <div class="swatches">
+            <div>
+              <span>Target</span>
+              <div id="targetSwatch" class="swatch"></div>
+            </div>
+            <div>
+              <span>Predicted</span>
+              <div id="predictedSwatch" class="swatch"></div>
+            </div>
+          </div>
+          <p class="note">Screen preview is approximate. Use your eye on stage.</p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Emitter</th>
+                  <th>DMX</th>
+                  <th>%</th>
+                </tr>
+              </thead>
+              <tbody id="outputBody"></tbody>
+            </table>
+          </div>
+        </article>
+      </section>
+
+      <section class="panel fixture-builder">
+        <div class="section-header">
+          <h2>Fixture Builder</h2>
+          <p>Saved locally on this device.</p>
+        </div>
+        <div class="row row-wrap">
+          <label class="field">
+            <span>Fixture Name</span>
+            <input id="fixtureName" type="text" placeholder="e.g. House Wash" />
+          </label>
+          <label class="field compact">
+            <span>Family</span>
+            <select id="fixtureFamilySelect">
+              <option value="additive">Additive LEDs</option>
+              <option value="cmy">CMY+CTO</option>
+            </select>
+          </label>
+        </div>
+        <div id="fixtureEmitterList" class="checklist"></div>
+        <div class="row">
+          <button id="saveFixtureBtn" type="button" class="btn">Save / Update</button>
+          <button id="deleteFixtureBtn" type="button" class="btn ghost">Delete</button>
+        </div>
+        <label class="field">
+          <span>Saved Fixtures</span>
+          <select id="fixtureSelect">
+            <option value="">Select a fixture</option>
+          </select>
+        </label>
+      </section>
+    </main>
+
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>
